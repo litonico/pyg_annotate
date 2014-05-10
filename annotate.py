@@ -4,7 +4,10 @@ from ast import literal_eval
 
 def annotate(lang, source):
     """
-    Source including annotation hooks in comments
+    lang:
+        Name of the source language.
+    source:
+        Souce code, including annotation hooks in comments
 
     ......# @0
 
@@ -28,26 +31,34 @@ def annotate(lang, source):
     source = source.split("\n")  # Can now iterate over lines of source
 
     for lineno, line in enumerate(source):
-        if anno_pattern.match(line):
+        if re.search(anno_pattern, line) is not None:
             anno_block_start = lineno
             break  # we're at the end of the code; the annotations begin
 
-        comment_start = line.find(comment_chars[lang])
+        # Obviously, this bit only works for inline comments.
+        # No idea how I should support block comments (the line refs issue)
+        if comment_start = line.find(comment_chars[lang.lower()]) > -1:
+            anno_match = re.search(hook_pattern, line[comment_start:])
+            if anno_match is not None:  # there's an annotation hook
 
-        anno_id = re.match(line[comment_start:],)[1:]
+                # strip the '@'
+                line_anno_ids = map(re.group(hook_pattern, line[comment_start:])#[1:]
 
-        # strip the '@', convert to int
-        try:
-            anno_id = int(anno_id)
-        except ValueError:
-            print("Annotation ID was not a number!")
-            raise
+                # delete the hook
 
-        anno_ids += anno_id
 
-    anno_block = source[anno_block_start:].join("\n")  # does this work?
+            try:
+                anno_id = int(anno_id)
+            except ValueError:
+                print("Annotation ID was not a number!")
+                raise
+
+            anno_ids += anno_id
+
+    anno_block = source[anno_block_start:].join("")  # does this work?
     source = source[:anno_block_start]
 
+    # Whitespace match?
     while anno_block is not "":  # TODO: this should REALLY be done recursively
         block_id = int(anno_block[anno_block.find("{"):])
         if block_id not in anno_ids:
@@ -76,9 +87,11 @@ def annotate(lang, source):
                     a malformed string")
             raise
 
-        anno_block = anno_block[block_end:]
+        anno_block = anno_block[block_end:].strip()
 
     return annotations
+
+#overlapping annos on a single line?
 
 comment_chars = {
     # Scripting
