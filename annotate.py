@@ -1,5 +1,10 @@
 import re
 from ast import literal_eval
+import json
+
+
+def rest(lst):
+    return lst[1:]
 
 
 def annotate(lang, source):
@@ -24,36 +29,62 @@ def annotate(lang, source):
     nums, char ranges, and popover options.
     """
 
+    comment_chars = {
+        # Scripting
+        'ruby': '#',
+        'python': '#',
+        'shell': '#',
+        'make': '#',
+
+        # Lisps
+        'lisp': ';',
+        'scheme': ';',
+        'racket': ';',
+
+        # C-style (comment blocks not yet supported)
+        'c': r'//',
+        'c++': r'//',
+        'java': r'//',
+
+
+        # Other
+        'html': '<!--'
+    }
+
     annotations = {}
+    anno_ids = []
     hook_pattern = re.compile(r'@[0-9]+')
     anno_pattern = re.compile(r'^@[0-9]+\w*\{')
-    
+
     source = source.split("\n")  # Can now iterate over lines of source
 
     for lineno, line in enumerate(source):
-        if re.search(anno_pattern, line) is not None:
+        if re.search(anno_pattern, line):
             anno_block_start = lineno
             break  # we're at the end of the code; the annotations begin
 
         # Obviously, this bit only works for inline comments.
         # No idea how I should support block comments (the line refs issue)
-        if comment_start = line.find(comment_chars[lang.lower()]) > -1:
-            anno_match = re.search(hook_pattern, line[comment_start:])
-            if anno_match is not None:  # there's an annotation hook
+        comment_start = line.find(comment_chars[lang.lower()])
 
-                # strip the '@'
-                line_anno_ids = map(re.group(hook_pattern, line[comment_start:])#[1:]
+        if comment_start > -1:  # Line has a comment
+            anno_match = re.search(hook_pattern, line[comment_start:])
+            if anno_match:  # there's at least one annotation hook
+
+                # Get a list of hooks, strip the '@' from each
+                line_anno_ids = map(rest, list(anno_match.groups()))
+
+                for anno_id in line_anno_ids:
+                    try:
+                        anno_id = int(anno_id)  # TODO: mutable check?
+                    except ValueError:
+                        print("Annotation ID was not a number!")
+                        raise
 
                 # delete the hook
 
-
-            try:
-                anno_id = int(anno_id)
-            except ValueError:
-                print("Annotation ID was not a number!")
-                raise
-
-            anno_ids += anno_id
+            # TODO: how to properly keep track of linenos?
+            anno_ids.append(line_anno_ids)
 
     anno_block = source[anno_block_start:].join("")  # does this work?
     source = source[:anno_block_start]
@@ -81,9 +112,9 @@ def annotate(lang, source):
 
         try:  # to add the current block to the list of annotations
             annotations[block_id] = \
-                literal_eval(anno_block[len(str(block_id)):block_end])
+                json.decode(anno_block[len(str(block_id)):block_end])
         except ValueError:
-            print("Annotation is not a valid Python dict, or contains \
+            print("Annotation is not a valid dict, or contains \
                     a malformed string")
             raise
 
@@ -91,27 +122,5 @@ def annotate(lang, source):
 
     return annotations
 
-#overlapping annos on a single line?
+# overlapping annos on a single line?
 
-comment_chars = {
-    # Scripting
-    'ruby': '#',
-    'python': '#',
-    'shell': '#',
-    'make': '#',
-
-    # Lisps
-    'lisp': ';',
-    'scheme': ';',
-    'racket': ';',
-
-    # C-style (comment blocks not yet supported)
-    'c': r'//',
-    'c++': r'//',
-    'java': r'//',
-
-
-    # Other
-    'html': '<!--'
-
-}
