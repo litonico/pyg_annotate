@@ -2,11 +2,7 @@ import re
 import json
 
 
-def rest(lst):
-    return lst[1:]
-
-
-def annotate(lang, source):
+def annotate(source, lang):
     """
     lang:
         Name of the source language.
@@ -56,8 +52,8 @@ def annotate(lang, source):
 
     annotations = {}
     anno_ids = []
-    hook_pattern = re.compile(r'@[0-9]+')
-    anno_pattern = re.compile(r'^@[0-9]+\w*\{')
+    hook_pattern = re.compile(r'(@[0-9]+)')
+    anno_pattern = re.compile(r'(^@[0-9]+\w*\{)')
 
     source = source.split("\n")  # Can now iterate over lines of source
 
@@ -72,29 +68,37 @@ def annotate(lang, source):
 
         if comment_start > -1:  # Line has a comment
             anno_match = re.search(hook_pattern, line[comment_start:])
-            if anno_match:  # there's at least one annotation hook
+
+            if anno_match:  # there's at least* one annotation hook
 
                 # Get a list of hooks, strip the '@' from each
-                line_anno_ids = map(rest, list(anno_match.groups()))
+                line_anno_ids = list(
+                        map(lambda x: x[1:], list(anno_match.groups()))
+                        )
+                print(line_anno_ids)
 
                 for anno_id in line_anno_ids:
                     try:
                         anno_id = int(anno_id)  # TODO: mutable check?
+                        print(anno_id)
                     except ValueError:
                         print("Annotation ID was not a number!")
                         raise
 
-                annotations[anno_id] = lineno
+                    annotations[anno_id] = {"line": lineno}
+
+                print(line_anno_ids)
 
                 # Delete the hook from the line
-                source[lineno] = re.split(hook_pattern, line).join("")
+                source[lineno] = "".join(re.split(hook_pattern, line))
 
-            anno_ids.append(line_anno_ids)
+                anno_ids += (line_anno_ids)
+                print(anno_ids)
 
     # The annotation content has been found; we want to iterate over its
     # chars, not its lines, so we'll join it back together
     # TODO: does this work?
-    anno_block = source[anno_block_start:].join("").strip()
+    anno_block = "".join(source[anno_block_start:]).strip()
 
     # And cut out the annotation content from the source
     source = source[:anno_block_start]
@@ -121,9 +125,10 @@ def annotate(lang, source):
                 raise SyntaxError("Unbalaced curly braces in annotation")
 
         try:  # to add the current block to the dict of annotations
-            # Each annotation is a list- id: [line, {annotation}]
-            annotations[block_id] += \
-                json.decode(anno_block[len(str(block_id)):block_end])
+            annotations.update({  # update() will match id numbers
+                block_id: json.decode(anno_block[len(str(block_id)):block_end])
+                })
+
         except ValueError:
             print("Annotation is not a valid dict, or contains \
                     a malformed string")

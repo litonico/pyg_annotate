@@ -43,4 +43,3 @@ class AnnotationFilter(Filter):
 
             if value == "\n":
                 chars_on_line = 0
-

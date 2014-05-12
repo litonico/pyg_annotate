@@ -1,5 +1,4 @@
-{% highlight python %}
-
+sourcestr = """\
 class Soldier(object):
 
     def __init__(self, name):  # @0
@@ -17,6 +16,5 @@ this class will be called as first_soldier = Soldier(\"Wei Xu\"), where \"Wei
 Xu\" will now be the name of that Soldier."}
 
 @1{range: "full_line",
-        content: "nononono"}   
-
-{% end %}
+        content: "nononono"}
+"""
