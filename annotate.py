@@ -1,5 +1,4 @@
 import re
-from ast import literal_eval
 import json
 
 
@@ -19,9 +18,9 @@ def annotate(lang, source):
     and annotations with the corresponding key
 
     @0{
-    content: "This is my annotation",
-    range: "3-5", (range, from char to char)
-    options: (a dict of Bootstrap popover options)
+        content: "This is my annotation",
+        range: "3-5", (range, from char to char)
+        options: (a dict of Bootstrap popover options)
     }
 
     Returns the source (with annotations and hooks stripped)
@@ -40,15 +39,19 @@ def annotate(lang, source):
         'lisp': ';',
         'scheme': ';',
         'racket': ';',
+        'clojure': ';',
+
+        # Functional
+        'haskell': '--',
 
         # C-style (comment blocks not yet supported)
         'c': r'//',
         'c++': r'//',
         'java': r'//',
 
-
         # Other
-        'html': '<!--'
+        'html': '<!--',
+        'assembly': ';'
     }
 
     annotations = {}
@@ -61,7 +64,7 @@ def annotate(lang, source):
     for lineno, line in enumerate(source):
         if re.search(anno_pattern, line):
             anno_block_start = lineno
-            break  # we're at the end of the code; the annotations begin
+            break  # we're at the end of the code; the annotations begin.
 
         # Obviously, this bit only works for inline comments.
         # No idea how I should support block comments (the line refs issue)
@@ -81,17 +84,24 @@ def annotate(lang, source):
                         print("Annotation ID was not a number!")
                         raise
 
-                # delete the hook
+                annotations[anno_id] = lineno
 
-            # TODO: how to properly keep track of linenos?
+                # Delete the hook from the line
+                source[lineno] = re.split(hook_pattern, line).join("")
+
             anno_ids.append(line_anno_ids)
 
-    anno_block = source[anno_block_start:].join("")  # does this work?
+    # The annotation content has been found; we want to iterate over its
+    # chars, not its lines, so we'll join it back together
+    # TODO: does this work?
+    anno_block = source[anno_block_start:].join("").strip()
+
+    # And cut out the annotation content from the source
     source = source[:anno_block_start]
 
     # Whitespace match?
     while anno_block is not "":  # TODO: this should REALLY be done recursively
-        block_id = int(anno_block[anno_block.find("{"):])
+        block_id = int(anno_block[1:anno_block.find("{")])
         if block_id not in anno_ids:
             raise LookupError(
                 "Annotation {0} has no corresponding hook!"
@@ -110,8 +120,9 @@ def annotate(lang, source):
             if curlybrace_count > 0:
                 raise SyntaxError("Unbalaced curly braces in annotation")
 
-        try:  # to add the current block to the list of annotations
-            annotations[block_id] = \
+        try:  # to add the current block to the dict of annotations
+            # Each annotation is a list- id: [line, {annotation}]
+            annotations[block_id] += \
                 json.decode(anno_block[len(str(block_id)):block_end])
         except ValueError:
             print("Annotation is not a valid dict, or contains \
@@ -120,7 +131,6 @@ def annotate(lang, source):
 
         anno_block = anno_block[block_end:].strip()
 
-    return annotations
+    return source.join("\n"), annotations
 
 # overlapping annos on a single line?
-
