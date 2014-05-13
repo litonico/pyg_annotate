@@ -1,5 +1,5 @@
 import re
-import json
+from ast import literal_eval
 
 
 def annotate(source, lang):
@@ -55,6 +55,7 @@ def annotate(source, lang):
     hook_pattern = re.compile(r'(@[0-9]+)')
     anno_pattern = re.compile(r'(^@[0-9]+\w*\{)')
 
+    print(source)
     source = source.split("\n")  # Can now iterate over lines of source
 
     for lineno, line in enumerate(source):
@@ -73,27 +74,20 @@ def annotate(source, lang):
 
                 # Get a list of hooks, strip the '@' from each
                 line_anno_ids = list(
-                        map(lambda x: x[1:], list(anno_match.groups()))
-                        )
-                print(line_anno_ids)
+                    map(lambda x: int(x[1:]), list(anno_match.groups()))
+                )
 
                 for anno_id in line_anno_ids:
-                    try:
-                        anno_id = int(anno_id)  # TODO: mutable check?
-                        print(anno_id)
-                    except ValueError:
-                        print("Annotation ID was not a number!")
-                        raise
-
                     annotations[anno_id] = {"line": lineno}
 
-                print(line_anno_ids)
-
                 # Delete the hook from the line
-                source[lineno] = "".join(re.split(hook_pattern, line))
+                source[lineno] = re.sub(hook_pattern, "", line)
+
+                # Check if the comment is empty; if it is, delete it.
+                if not source[lineno][comment_start+1:].strip():
+                    source[lineno] = source[lineno][:comment_start]
 
                 anno_ids += (line_anno_ids)
-                print(anno_ids)
 
     # The annotation content has been found; we want to iterate over its
     # chars, not its lines, so we'll join it back together
@@ -105,17 +99,23 @@ def annotate(source, lang):
 
     # Whitespace match?
     while anno_block is not "":  # TODO: this should REALLY be done recursively
+
         block_id = int(anno_block[1:anno_block.find("{")])
         if block_id not in anno_ids:
             raise LookupError(
                 "Annotation {0} has no corresponding hook!"
                 .format(block_id))
 
-        for index, char in enumerate(anno_block[1:]):  # chomp the '@'
-            curlybrace_count = 1
+        curlybrace_count = 1
+
+        # Used in list slices to chomp the '@', the block_id (an int)
+        start_offset = 1 + len(str(block_id))
+
+        for index, char in enumerate(anno_block[start_offset+1:]):
             if curlybrace_count == 0:  # we've found the end of the annotation
-                block_end = index
+                block_end = index + start_offset + 1  # to include the '}'
                 break  # out of the for loop
+
             if char == '{':
                 curlybrace_count += 1
             elif char == '}':
@@ -126,16 +126,15 @@ def annotate(source, lang):
 
         try:  # to add the current block to the dict of annotations
             annotations.update({  # update() will match id numbers
-                block_id: json.decode(anno_block[len(str(block_id)):block_end])
+                block_id: literal_eval(
+                    anno_block[start_offset:block_end]
+                    )
                 })
 
         except ValueError:
-            print("Annotation is not a valid dict, or contains \
-                    a malformed string")
+            print("Annotation is not a valid dict, or contains a malformed string")
             raise
 
         anno_block = anno_block[block_end:].strip()
 
-    return source.join("\n"), annotations
-
-# overlapping annos on a single line?
+    return "\n".join(source), annotations
