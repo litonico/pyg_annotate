@@ -15,13 +15,13 @@ def annotate(source, lang):
 
     @0{
         content: "This is my annotation",
-        range: "3-5", (range, from char to char)
-        options: (a dict of Bootstrap popover options)
+        range: (3, 5),  # a tuple
+        options: {}     # a dict of Bootstrap popover options
     }
 
     Returns the source (with annotations and hooks stripped)
-    and a dict of annotations (dicts) mapping ids to line
-    nums, char ranges, and popover options.
+    and a list of annotations (dicts) which have line
+    nums, char ranges, and a dict of popover options.
     """
 
     comment_chars = {
@@ -55,7 +55,6 @@ def annotate(source, lang):
     hook_pattern = re.compile(r'(@[0-9]+)')
     anno_pattern = re.compile(r'(^@[0-9]+\w*\{)')
 
-    print(source)
     source = source.split("\n")  # Can now iterate over lines of source
 
     for lineno, line in enumerate(source):
@@ -91,7 +90,6 @@ def annotate(source, lang):
 
     # The annotation content has been found; we want to iterate over its
     # chars, not its lines, so we'll join it back together
-    # TODO: does this work?
     anno_block = "".join(source[anno_block_start:]).strip()
 
     # And cut out the annotation content from the source
@@ -137,4 +135,4 @@ def annotate(source, lang):
 
         anno_block = anno_block[block_end:].strip()
 
-    return "\n".join(source), annotations
+    return '\n'.join(source), list(annotations.values())
