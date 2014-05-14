@@ -5,7 +5,7 @@ class Soldier(object):
         self.name = name
         self.dead = False
 
-    def die_for_emperor(self): # @1
+    def die_in_battle(self): # @1
         while not self.dead:
             attack()
 

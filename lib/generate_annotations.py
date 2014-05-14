@@ -1,6 +1,6 @@
 import re
 from ast import literal_eval
-from langauge_data import comment_chars
+from pyg_annotate.lib.language_data import comment_chars
 
 
 def annotate(source, lang):

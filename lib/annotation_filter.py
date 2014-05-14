@@ -1,7 +1,7 @@
 from pygments.filter import Filter
 from pygments.token import Token
 from pygments.util import get_list_opt
-import annotate
+from pyg_annotate.lib.generate_annotations import annotate
 
 
 def run_annotate(source_in):
