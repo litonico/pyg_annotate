@@ -25,32 +25,6 @@ def annotate(source, lang):
     nums, char ranges, and a dict of popover options.
     """
 
-    comment_chars = {
-        # Scripting
-        'ruby': '#',
-        'python': '#',
-        'shell': '#',
-        'make': '#',
-
-        # Lisps
-        'lisp': ';',
-        'scheme': ';',
-        'racket': ';',
-        'clojure': ';',
-
-        # Functional
-        'haskell': '--',
-
-        # C-style (comment blocks not yet supported)
-        'c': r'//',
-        'c++': r'//',
-        'java': r'//',
-
-        # Other
-        'html': '<!--',
-        'assembly': ';'
-    }
-
     annotations = {}
     anno_ids = []
     hook_pattern = re.compile(r'(@[0-9]+)')
@@ -131,7 +105,8 @@ def annotate(source, lang):
                 })
 
         except ValueError:
-            print("Annotation is not a valid dict, or contains a malformed string")
+            print("Annotation is not a valid dict, "
+                  "or contains a malformed string")
             raise
 
         anno_block = anno_block[block_end:].strip()
