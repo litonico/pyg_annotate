@@ -3,7 +3,7 @@ Pygments Annotator
 
 Allows Pygments-formatted source code to be annotated with Bootstrap popovers.
 The goal is simple easy integration with Jekyll and any web service that uses
-Pygments
+Pygments.
 
 Annotations are listed at the end of a file, with hooks in the comments of the
 lines where they should appear. They can either be full-line, or have a 
@@ -44,5 +44,6 @@ pyg_annotate`.
 
 Dependencies
 ------------
-Currently depends on [Bootstrap](http://getbootstrap.com/), though adding
+Requires [Pygments](http://pygments.org/) (`pip3 install pygments`)
+Currently [Bootstrap](http://getbootstrap.com/) is also required, though adding
 support for other annotation-styles is possible.
