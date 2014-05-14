@@ -34,3 +34,15 @@ Here's how it works!
     @1{"range": "full_line",
     "content": "This whole line is highlighted",
     "options": {}
+
+
+Installation
+------------
+Download or `git clone` this directory into your Python3 `site_packages`, or
+symlink it there. You can then import it into a python project with `import 
+pyg_annotate`.
+
+Dependencies
+------------
+Currently depends on [Bootstrap](http://getbootstrap.com/), though adding
+support for other annotation-styles is possible.
