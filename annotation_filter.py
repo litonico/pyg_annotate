@@ -1,4 +1,5 @@
 from pygments.filter import Filter
+from pygments.token import Token
 from pygments.util import get_list_opt
 import annotate
 
