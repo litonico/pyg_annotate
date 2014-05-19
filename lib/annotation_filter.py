@@ -40,7 +40,7 @@ class AnnotationFilter(Filter):
             key=lambda anno: (anno["line"], anno["range"][0])
             )
 
-    # # Popover-annotation handling
+    # # TODO: Popover-annotation handling
     # anno_open, anno_close = '', ''
     # if index > anno_start:  # we've passed the start
     # if index > anno_end:  # we've passed the end

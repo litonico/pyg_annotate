@@ -45,5 +45,6 @@ pyg_annotate`.
 Dependencies
 ------------
 Requires [Pygments](http://pygments.org/) (`pip3 install pygments`)
+
 Currently [Bootstrap](http://getbootstrap.com/) is also required, though adding
 support for other annotation-styles is possible.
