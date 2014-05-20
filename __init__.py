@@ -1,5 +1,6 @@
 from pyg_annotate.lib.annotation_filter import AnnotationFilter
 from pyg_annotate.lib.annotation_formatter import AnnotationHtmlFormatter
+from pyg_annotate.lib.generate_annotations import annotate
 from pygments.util import StringIO, BytesIO
 from pygments import lexers
 
@@ -50,5 +51,11 @@ def highlight(code, lexer, formatter=None, outfile=None):
     if isinstance(lexer, str):  # in case a string is passed
         lexer = lexers.get_lexer_by_name(lexer)
 
-    lexer = lexer.add_filter(AnnotationFilter)
-    return format(lex(code, lexer), AnnotationHtmlFormatter, outfile)
+    # TODO: problem- how to get comment chars when it's the lexer object
+    # that's passed?
+
+    souce, annos = annotate(code)
+
+    lexer = lexer.add_filter(AnnotationFilter(annos))
+
+    return format(lex(code, lexer), AnnotationHtmlFormatter(), outfile)

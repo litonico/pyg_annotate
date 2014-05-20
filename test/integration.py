@@ -2,7 +2,7 @@ def integration_test():
     """
     Importing?
     >>> import pyg_annotate
-    
+
     Pygments as usual?
     >>> pyg_annotate.highlight("lambda x: x*2", "python")
 
