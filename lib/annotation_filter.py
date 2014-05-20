@@ -1,20 +1,11 @@
 from pygments.filter import Filter
 from pygments.token import Token
-from pygments.util import get_list_opt
-from pyg_annotate.lib.generate_annotations import annotate
-
-
-def run_annotate(source_in):
-    annotations, source = annotate(source_in)
-
-    options = {"annotations": annotations}
-    filter = AnnotationFilter(options)
-    print(filter)
+# from pyg_annotate.lib.generate_annotations import annotate
 
 
 class AnnotationFilter(Filter):
     """
-    `options` : A list of dicts, with the follwing properties:
+    `annotations` : A list of dicts, with the follwing properties:
     {
     `range`: a string (e.g. "3-12") or "full_line"
 
@@ -23,16 +14,7 @@ class AnnotationFilter(Filter):
 
     def __init__(self, **options):
         Filter.__init__(self, **options)
-
-        self.escape_html = {
-            ord('&'): u'&amp;',
-            ord('<'): u'&lt;',
-            ord('>'): u'&gt;',
-            ord('"'): u'&quot;',
-            ord("'"): u'&#39;',
-        }
-
-        self.annotations = get_list_opt(options, "annotations")
+        self.annotations = options["annotations"]
 
         # Make sure the annotations are sorted by line, then char- we then only
         # Need to check the first annotation, not all of them.
@@ -40,13 +22,11 @@ class AnnotationFilter(Filter):
             key=lambda anno: (anno["line"], anno["range"][0])
             )
 
-    # # TODO: Popover-annotation handling
+    # TODO: Popover-annotation handling
     # anno_open, anno_close = '', ''
     # if index > anno_start:  # we've passed the start
     # if index > anno_end:  # we've passed the end
     #    Filter):
-
-    # value = value.translate(self.escape_html)
 
     def filter(self, lexer, stream):
         anno_open = "OPEN!"  # for testing

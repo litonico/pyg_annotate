@@ -25,10 +25,10 @@ class AnnotationHtmlFormatter(HtmlFormatter):
         line = ''
         for ttype, value in tokensource:
 
-            if ttype is Token.Annotation:
-                yield 0, value
+            # if ttype is Token.Annotation:
+                # yield 0, value
 
-            else:
+            if True: # else:
                 if nocls:
                     cclass = getcls(ttype)
                     while cclass is None:

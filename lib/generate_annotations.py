@@ -3,9 +3,9 @@ from ast import literal_eval
 from pyg_annotate.lib.language_data import comment_chars
 
 
-def annotate(source, lang):
+def annotate(source, lexer_name):
     """
-    lang:
+    lexer_name:
         Name of the source language.
     source:
         Souce code, including annotation hooks in comments
@@ -21,6 +21,7 @@ def annotate(source, lang):
     }
 
     Returns the source (with annotations and hooks stripped)
+
     and a list of annotations (dicts) which have line
     nums, char ranges, and a dict of popover options.
     """
@@ -39,7 +40,7 @@ def annotate(source, lang):
 
         # Obviously, this bit only works for inline comments.
         # No idea how I should support block comments (the line refs issue)
-        comment_start = line.find(comment_chars[lang.lower()])
+        comment_start = line.find(comment_chars[lexer_name])
 
         if comment_start > -1:  # Line has a comment
             anno_match = re.search(hook_pattern, line[comment_start:])
@@ -65,7 +66,11 @@ def annotate(source, lang):
 
     # The annotation content has been found; we want to iterate over its
     # chars, not its lines, so we'll join it back together
-    anno_block = "".join(source[anno_block_start:]).strip()
+    try:
+        # If this fails, we know the annotation block doesn't exist
+        anno_block = "".join(source[anno_block_start:]).strip()
+    except:
+        return '\n'.join(source), []
 
     # And cut out the annotation content from the source
     source = source[:anno_block_start]

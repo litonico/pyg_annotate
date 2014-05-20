@@ -1,26 +1,31 @@
 comment_chars = {
     # Scripting
-    'ruby': '#',
-    'python': '#',
-    'shell': '#',
-    'make': '#',
-
-    # Lisps
-    'lisp': ';',
-    'cl': ';',
-    'scheme': ';',
-    'racket': ';',
-    'clojure': ';',
+    'Ruby': '#',
+    'Python': '#',
+    'Python 3': '#',
+    'Perl': '#',
+    'Lua': '--',
+    'Tcl': '#',
+    'Shell Session': '#',
+    'Bash': '#',
+    'Make': '#',
 
     # Functional
-    'haskell': '--',
+    'Common Lisp': ';',
+    'Scheme': ';',
+    'Racket': ';',
+    'Haskell': '--',
+    'Erlang': '%',
 
     # C-style (comment blocks not yet supported)
-    'c': r'//',
-    'c++': r'//',
-    'java': r'//',
+    'C': r'//',
+    'C++': r'//',
+
+    # JVM
+    'Java': r'//',
+    'Clojure': ';',
 
     # Other
-    'html': '<!--',
-    'assembly': ';'
+    'Html': '<!--',
+    'Assembly': ';'
 }
