@@ -40,7 +40,12 @@ def annotate(source, lexer_name):
 
         # Obviously, this bit only works for inline comments.
         # No idea how I should support block comments (the line refs issue)
-        comment_start = line.find(comment_chars[lexer_name])
+        try:
+            comment_start = line.find(comment_chars[lexer_name])
+        except LookupError:
+            print("Lexer's comment character not found– please modify \
+                   language_data.py")
+            raise
 
         if comment_start > -1:  # Line has a comment
             anno_match = re.search(hook_pattern, line[comment_start:])
@@ -86,7 +91,7 @@ def annotate(source, lexer_name):
 
         curlybrace_count = 1
 
-        # Used in list slices to chomp the '@', the block_id (an int)
+        # Used in list slices to chomp the '@' and the block_id (an int)
         start_offset = 1 + len(str(block_id))
 
         for index, char in enumerate(anno_block[start_offset+1:]):
@@ -103,11 +108,10 @@ def annotate(source, lexer_name):
                 raise SyntaxError("Unbalaced curly braces in annotation")
 
         try:  # to add the current block to the dict of annotations
-            annotations.update({  # update() will match id numbers
-                block_id: literal_eval(
-                    anno_block[start_offset:block_end]
-                    )
-                })
+            annotations[block_id].update(
+                # append the anno data to the line number data
+                literal_eval(anno_block[start_offset:block_end])
+            )
 
         except ValueError:
             print("Annotation is not a valid dict, "

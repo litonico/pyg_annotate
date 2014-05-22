@@ -29,11 +29,11 @@ class AnnotationFilter(Filter):
     #    Filter):
 
     def filter(self, lexer, stream):
-        anno_open = "OPEN!"  # for testing
-        anno_close = "CLOSE!"
+        anno_open = "<span>OPEN!</span>"  # for testing
+        anno_close = "<span>CLOSE!</span>"
 
         chars_on_line = 0
-        linenum = 0
+        lineno = 0
         opened = False
         annotation = self.annotations.pop(0)
 
@@ -59,11 +59,10 @@ class AnnotationFilter(Filter):
                     else:
                         print("Annotation range is not valid- "
                               "should be a 2-tuple or 'full_line'")
-                        raise
 
                 if value == "\n":
                     chars_on_line = 0
-                    linenum += 1
+                    lineno += 1
                     yield ttype, value
 
                     # Full-line annotation handling: close the annotation
@@ -74,7 +73,7 @@ class AnnotationFilter(Filter):
                     if not opened:
                         if chars_on_line > anno_start:
                             opened = True
-                            yield anno_open, Token.Annotation
+                            yield Token.Annotation, anno_open
                             yield ttype, value
                         else:
                             yield ttype, value
@@ -82,7 +81,7 @@ class AnnotationFilter(Filter):
                     else:  # Close the <span> tag
                         if anno_end is not None and chars_on_line > anno_end:
                             yield ttype, value
-                            yield anno_close, Token.Annotation
+                            yield Token.Annotation, anno_close
                             # Move to the next annotation
                             annotation = self.annotations.pop(0)
                             opened = False

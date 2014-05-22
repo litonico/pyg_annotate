@@ -16,12 +16,15 @@ def integration_test():
 
     Complete functionality?
     >>> from pyg_annotate.test import testcase
-    >>> pyg_annotate.highlight
+    >>> pyg_annotate.highlight(testcase.sourcestr, "python")
     """
 
 if __name__ == "__main__":
     import pyg_annotate
-    pyg_annotate.highlight("lambda x: x*2", "python")
-
+    from pyg_annotate.test import testcase
+    print(pyg_annotate.highlight(testcase.sourcestr, "python"))
+'''
     import doctest
     doctest.testmod()
+    print("Tests have run!")
+    '''

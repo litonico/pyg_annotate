@@ -4,9 +4,6 @@ from pyg_annotate.lib.generate_annotations import annotate
 from pygments.util import StringIO, BytesIO
 from pygments import lexers
 
-from pygments.formatters.html import HtmlFormatter
-
-
 def lex(code, lexer):
     """
     Lex ``code`` with ``lexer`` and return an iterable of tokens.
@@ -59,6 +56,7 @@ def highlight(code, lexer, formatter=None, outfile=None):
 
     annotated_code, annos = annotate(code, lexer.name)
     assert(isinstance(annotated_code, str))
-    # lexer = lexer.add_filter(AnnotationFilter(annotations=annos))
+    lexer.add_filter(AnnotationFilter(annotations=annos))
 
+    assert(lexer is not None)
     return format(lex(annotated_code, lexer), AnnotationHtmlFormatter(), outfile)

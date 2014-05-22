@@ -7,6 +7,7 @@ class AnnoTests(unittest.TestCase):
     def setUp(self):
         from pyg_annotate.test.testcase import sourcestr
         self.source, self.annos = annotate(sourcestr, "Python")
+        print(self.source, self.annos)
 
     def test_types(self):
         self.assertTrue(isinstance(self.source, str))

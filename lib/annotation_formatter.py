@@ -3,6 +3,10 @@ from pygments.formatters.html import HtmlFormatter, _escape_html_table
 from pygments.token import Token
 
 
+# if ttype is Token.Annotation:
+# yield 0, value
+
+
 class AnnotationHtmlFormatter(HtmlFormatter):
 
     def __init__(self, **options):
@@ -23,12 +27,16 @@ class AnnotationHtmlFormatter(HtmlFormatter):
 
         lspan = ''
         line = ''
+
         for ttype, value in tokensource:
 
-            # if ttype is Token.Annotation:
-                # yield 0, value
+            # Dealing with annotations
+            if ttype is Token.Annotation:
+                # Just tag them as html cruft (code 0) and send them along
+                yield 0, value
 
-            if True: # else:
+            # Everything else is the same
+            else:
                 if nocls:
                     cclass = getcls(ttype)
                     while cclass is None:
@@ -64,6 +72,7 @@ class AnnotationHtmlFormatter(HtmlFormatter):
                             line += part + (lspan and '</span>') + lsep
                         yield 1, line
                         line = ''
+
                     elif part:
                         yield 1, cspan + part + (cspan and '</span>') + lsep
                     else:
@@ -80,5 +89,5 @@ class AnnotationHtmlFormatter(HtmlFormatter):
                     lspan = cspan
                 # else we neither have to open a new span nor set lspan
 
-            if line:
-                yield 1, line + (lspan and '</span>') + lsep
+        if line:
+            yield 1, line + (lspan and '</span>') + lsep
