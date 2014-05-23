@@ -7,7 +7,9 @@ class AnnotationFilter(Filter):
     """
     `annotations` : A list of dicts, with the follwing properties:
     {
-    `range`: a string (e.g. "3-12") or "full_line"
+    'range': a tuple of the character range (5, 12) or "full_line"
+    'content': the annotation's message
+    'options': a dict of Bootstrap popover options
 
     }
     """
@@ -21,12 +23,6 @@ class AnnotationFilter(Filter):
         self.annotations.sort(
             key=lambda anno: (anno["line"], anno["range"][0])
             )
-
-    # TODO: Popover-annotation handling
-    # anno_open, anno_close = '', ''
-    # if index > anno_start:  # we've passed the start
-    # if index > anno_end:  # we've passed the end
-    #    Filter):
 
     def filter(self, lexer, stream):
         anno_open = "<span>OPEN!</span>"  # for testing
@@ -42,13 +38,16 @@ class AnnotationFilter(Filter):
 
             if self.annotations:
                 # popover_options = annotation["options"]
-                # popover_data = ''
+                # # The stuff required for a popover
+                # popover_data = 'data-toggle="popover" '
                 # for option_name, option in popover_options:
                 #     popover_data += 'data-{name}="{opt}" '.format(
                 #         name=option_name, opt=option
                 #         )
                 # anno_open = "<span {data}>".format(data=popover_data)
                 # anno_close = "<\span>"
+
+                anno_line = annotation["line"]
 
                 try:
                     anno_start, anno_end = annotation["range"]
@@ -59,19 +58,21 @@ class AnnotationFilter(Filter):
                     else:
                         print("Annotation range is not valid- "
                               "should be a 2-tuple or 'full_line'")
+                        raise
 
                 if value == "\n":
                     chars_on_line = 0
                     lineno += 1
                     yield ttype, value
 
-                    # Full-line annotation handling: close the annotation
-                    if anno_end is None:
+                    # Close annotations that are still open
+                    if opened:
                         yield anno_close, Token.Annotation
+                        opened = False
 
                 else:  # Not a newline
                     if not opened:
-                        if chars_on_line > anno_start:
+                        if anno_line == lineno and chars_on_line > anno_start:
                             opened = True
                             yield Token.Annotation, anno_open
                             yield ttype, value

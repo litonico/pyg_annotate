@@ -4,6 +4,7 @@ from pyg_annotate.lib.generate_annotations import annotate
 from pygments.util import StringIO, BytesIO
 from pygments import lexers
 
+
 def lex(code, lexer):
     """
     Lex ``code`` with ``lexer`` and return an iterable of tokens.
@@ -51,12 +52,13 @@ def highlight(code, lexer, formatter=None, outfile=None):
     if isinstance(lexer, str):  # in case a string is passed
         lexer = lexers.get_lexer_by_name(lexer)
 
-    # TODO: problem- how to get comment chars when it's the lexer object
-    # that's passed?
-
     annotated_code, annos = annotate(code, lexer.name)
     assert(isinstance(annotated_code, str))
     lexer.add_filter(AnnotationFilter(annotations=annos))
 
     assert(lexer is not None)
-    return format(lex(annotated_code, lexer), AnnotationHtmlFormatter(), outfile)
+    return format(
+        lex(annotated_code, lexer),
+        AnnotationHtmlFormatter(),
+        outfile
+        )
