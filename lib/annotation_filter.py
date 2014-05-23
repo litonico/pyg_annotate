@@ -25,8 +25,8 @@ class AnnotationFilter(Filter):
         print(self.annotations)
 
     def filter(self, lexer, stream):
-        # anno_open = "<span>OPEN!</span>"  # for testing
-        # anno_close = "<span>CLOSE!</span>"
+        anno_open = "OP<>EN!"  # for testing
+        anno_close = "CL<>OSE!"
 
         chars_on_line = 0
         lineno = 1  # lines, as we talk about them, are 1-indexed
@@ -38,6 +38,7 @@ class AnnotationFilter(Filter):
             if annotation:
                 print(chars_on_line, value)
 
+                '''
                 # The stuff required for a popover
                 popover_data = \
                     'data-toggle="popover" data-content="{0}" '\
@@ -46,9 +47,9 @@ class AnnotationFilter(Filter):
                 # Options handling, if they exist
                 try:
                     popover_options = annotation["options"]
-                except:
-                    popover_data += 'data-container="body"\
-                    data-placement="top"'  # No options, use defaults
+                except:  # No options, use defaults
+                    popover_data += \
+                        'data-container="body" data-placement="top"'
                 else:
                     for option_name, option in popover_options:
                         popover_data += 'data-{name}="{opt}" '.format(
@@ -57,6 +58,7 @@ class AnnotationFilter(Filter):
 
                 anno_open = "<span {data}>".format(data=popover_data)
                 anno_close = "<\span>"
+                '''
 
                 anno_line = annotation["line"]
 
@@ -72,10 +74,10 @@ class AnnotationFilter(Filter):
                         raise
 
                 if value == '\n':
-                    chars_on_line = 0
+                    chars_on_line = 1  # Compensates for Pygments
                     lineno += 1
 
-                    # Close annotations that are still open
+                    # Close any annotations that are still open
                     if opened:
                         yield Token.Annotation, anno_close
                         chars_on_line += len(value)
@@ -88,12 +90,13 @@ class AnnotationFilter(Filter):
 
                 else:  # Not a newline
                     if not opened:
-                        if anno_line == lineno and chars_on_line > anno_start:
+                        if anno_line == lineno and chars_on_line >= anno_start:
+                            yield Token.Annotation, anno_open
+
                             yield ttype, value
                             chars_on_line += len(value)
 
                             opened = True
-                            yield Token.Annotation, anno_open
                         else:
                             yield ttype, value
                             chars_on_line += len(value)
