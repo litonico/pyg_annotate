@@ -53,7 +53,7 @@ def annotate(source, lexer_name):
         if comment_start > -1:  # Line has a comment
             anno_match = re.search(hook_pattern, line[comment_start:])
 
-            if anno_match:  # there's at least* one annotation hook
+            if anno_match:  # there's at least one annotation hook
 
                 # Get a list of hooks, strip the '@' from each
                 line_anno_ids = list(
@@ -69,7 +69,7 @@ def annotate(source, lexer_name):
 
                 # Check if the comment is empty; if it is, delete it.
                 if not source[lineno][comment_start+1:].strip():
-                    source[lineno] = source[lineno][:comment_start]
+                    source[lineno] = source[lineno][:comment_start].rstrip()
 
                 anno_ids += (line_anno_ids)
 
@@ -84,8 +84,7 @@ def annotate(source, lexer_name):
     # And cut out the annotation content from the source
     source = source[:anno_block_start]
 
-    # Whitespace match?
-    while anno_block is not "":  # TODO: this should REALLY be done recursively
+    while anno_block is not "":  # This should REALLY be done recursively
 
         block_id = int(anno_block[1:anno_block.find("{")])
         if block_id not in anno_ids:
@@ -99,7 +98,7 @@ def annotate(source, lexer_name):
         start_offset = 1 + len(str(block_id))
 
         for index, char in enumerate(anno_block[start_offset+1:]):
-            if curlybrace_count == 0:  # we've found the end of the annotation
+            if curlybrace_count == 0:  # We've found the end of the annotation
                 block_end = index + start_offset + 1  # to include the '}'
                 break  # out of the for loop
 
@@ -116,7 +115,6 @@ def annotate(source, lexer_name):
                 # append the anno data to the line number data
                 literal_eval(anno_block[start_offset:block_end])
             )
-
         except ValueError:
             print("Annotation is not a valid dict, "
                   "or contains a malformed string")
