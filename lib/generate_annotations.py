@@ -33,6 +33,9 @@ def annotate(source, lexer_name):
 
     source = source.split("\n")  # Can now iterate over lines of source
 
+    while source[0].isspace():  # Blank lines at the beginning?
+        source = source[1:]
+
     for lineno, line in enumerate(source):
         if re.search(anno_pattern, line):
             anno_block_start = lineno
@@ -58,7 +61,8 @@ def annotate(source, lexer_name):
                 )
 
                 for anno_id in line_anno_ids:
-                    annotations[anno_id] = {"line": lineno}
+                    # Humans start line indices at 1
+                    annotations[anno_id] = {"line": lineno+1}
 
                 # Delete the hook from the line
                 source[lineno] = re.sub(hook_pattern, "", line)

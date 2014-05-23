@@ -1,5 +1,4 @@
-sourcestr = """
-class Soldier(object):
+sourcestr = """class Soldier(object):
 
     def __init__(self, name):  # @0
         self.name = name
