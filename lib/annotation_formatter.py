@@ -29,10 +29,10 @@ class AnnotationHtmlFormatter(HtmlFormatter):
         line = ''
 
         for ttype, value in tokensource:
-            if value == '\n':
-                print(ttype, 'NL')  # DEBUG
+            if value == "\n":  # DEBUG
+                print("NL")
             else:
-                print(ttype, value)  # DEBUG
+                print(value)
 
             if ttype is Token.Annotation:
                 cspan = ''
@@ -51,7 +51,10 @@ class AnnotationHtmlFormatter(HtmlFormatter):
                     cls = self._get_css_class(ttype)
                     cspan = cls and '<span class="%s">' % cls or ''
 
-            parts = value.translate(escape_table).split('\n')
+            if ttype is Token.Annotation:
+                parts = value.split('\n')  # We need those angle brackets!
+            else:
+                parts = value.translate(escape_table).split('\n')
 
             if tagsfile and ttype in Token.Name:
                 filename, linenumber = self._lookup_ctag(value)

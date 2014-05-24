@@ -25,20 +25,21 @@ class AnnotationFilter(Filter):
         print(self.annotations)
 
     def filter(self, lexer, stream):
-        anno_open = "OP<>EN!"  # for testing
-        anno_close = "CL<>OSE!"
+        # anno_open = "OP<>EN!"  # for testing
+        # anno_close = "CL<>OSE!"
 
         chars_on_line = 0
         lineno = 1  # lines, as we talk about them, are 1-indexed
         opened = False
-        annotation = self.annotations[0]
+        if self.annotations:
+            annotation = self.annotations.pop(0)
+        else:
+            annotation = None
 
         for ttype, value in stream:
 
             if annotation:
-                print(chars_on_line, value)
 
-                '''
                 # The stuff required for a popover
                 popover_data = \
                     'data-toggle="popover" data-content="{0}" '\
@@ -57,8 +58,10 @@ class AnnotationFilter(Filter):
                             )
 
                 anno_open = "<span {data}>".format(data=popover_data)
-                anno_close = "<\span>"
-                '''
+
+                # TODO: unsure of the cause of this, but the span before
+                # The end of an annotation is supressed in the formatter.
+                anno_close = "</span></span ANNO_CLOSE>"
 
                 anno_line = annotation["line"]
 
@@ -67,6 +70,7 @@ class AnnotationFilter(Filter):
                 except ValueError:
                     if annotation["range"] == "full_line":
                         anno_start = 0
+                        anno_end = None
 
                     else:
                         print("Annotation range is not valid- "

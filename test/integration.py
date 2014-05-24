@@ -28,7 +28,8 @@ if __name__ == "__main__":
     from pyg_annotate.lib.generate_annotations import annotate
     # print(annotate(testcase.sourcestr, 'python'))
     print(pyg_annotate.highlight(testcase.sourcestr, "python"))
-'''
+    print(pyg_annotate.highlight(testcase.comparison_sourcestr, "python"))
+    '''
     import doctest
     doctest.testmod()
     print("Tests have run!")
