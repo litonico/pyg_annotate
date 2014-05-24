@@ -14,7 +14,9 @@ A Python dict of [Bootstrap popover options](http://getbootstrap.com/javascript/
 "Bootstrap popover options") can also be included: they'll be used to format
 the `<span>` tags around the popover.
 
-Here's how it works!
+Here's how it works! This is an example explaining classes from
+[The Codeless Code](http://thecodelesscode.com/ "The Codeless Code")– I've
+annotated it to explain some of the Python notation, like `__init__`
 
     class Soldier(object):
 
@@ -26,7 +28,7 @@ Here's how it works!
             while not self.dead:
                 attack()
 
-    @0{'range': '5-29', 
+    @0{'range': (5, 29), 
     'content': '__init__ gets parameters when a class is initialized. For example, 
     this class will be called as first_soldier = Soldier("Li Si"), where "Li Si" will 
     now be the name of that Soldier.'}
@@ -40,7 +42,8 @@ Installation
 ------------
 Download or `git clone` this directory into your Python3 `site_packages`, or
 symlink it there. You can then import it into a python project with `import 
-pyg_annotate`.
+pyg_annotate`. It does **not** currently work with the `pygmentize` script, 
+because it contains a bunch of different compenents, not just a formatter.
 
 Dependencies
 ------------
@@ -48,3 +51,9 @@ Requires [Pygments](http://pygments.org/) (`pip3 install pygments`)
 
 Currently [Bootstrap](http://getbootstrap.com/) is also required, though adding
 support for other annotation-styles is possible.
+
+Extending Language Support
+--------------------------
+Just edit `lib/language_data.py` to include the name of a Pygments lexer you'd
+like to support and the single-line comment charcter of that language. Then, 
+fire off a pull request so we all can use you extention!
