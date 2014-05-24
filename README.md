@@ -16,7 +16,7 @@ the `<span>` tags around the popover.
 
 Here's how it works! This is an example explaining classes from
 [The Codeless Code](http://thecodelesscode.com/ "The Codeless Code")– I've
-annotated it to explain some of the Python notation, like `__init__`
+annotated it to explain some of the Python notation, like `__init__`.
 
     class Soldier(object):
 
@@ -29,14 +29,28 @@ annotated it to explain some of the Python notation, like `__init__`
                 attack()
 
     @0{'range': (5, 29), 
-    'content': '__init__ gets parameters when a class is initialized. For example, 
-    this class will be called as first_soldier = Soldier("Li Si"), where "Li Si" will 
-    now be the name of that Soldier.'}
+    'content': '__init__ gets parameters when a class is initialized. For 
+    example, this class will be called as first_soldier = Soldier("Li Si"), 
+    where "Li Si" will now be the name of that Soldier.'}
 
     @1{"range": "full_line",
-    "content": "This whole line is highlighted",
-    "options": {}
+    "content": "This method doesn't really exist; it's just an example",
+    "options": {data-container="body" data-trigger="hover" 
+    data-placement="right}}
 
++ Annotations are placed in inline comments, using the @ symbol and a unique
+ID. They're cross-referenced with a block of annotations at the bottom of the
+source.
+
++ Comments that are **just** annotations are deleted, but otherwise, they're
+preserved.
+
++ `range` can be either a tuple of character ranges or 'full_line'. The 
+character ranges are rounded to the nearest token for simplicity.
+
++ A JSON object called `options` can be included: it will be the Popover's 
+options. Otherwise, the defaults (`data-container="body"` and 
+`data-placement="top"`) are used.
 
 Installation
 ------------
@@ -47,6 +61,8 @@ because it contains a bunch of different compenents, not just a formatter.
 
 Dependencies
 ------------
+Python 3 is required; versions below 3 are not supported.
+
 Requires [Pygments](http://pygments.org/) (`pip3 install pygments`)
 
 Currently [Bootstrap](http://getbootstrap.com/) is also required, though adding
