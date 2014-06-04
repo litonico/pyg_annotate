@@ -23,6 +23,14 @@ class AnnotationFilter(Filter):
             key=lambda anno: (anno["line"], anno["range"][0])
             )
 
+        self.escape_html = {
+            ord('&'): '&amp;',
+            ord('<'): '&lt;',
+            ord('>'): '&gt;',
+            ord('"'): '&quot;',
+            ord("'"): '&#39;',
+        }
+
     def filter(self, lexer, stream):
 
         chars_on_line = 0
@@ -40,7 +48,7 @@ class AnnotationFilter(Filter):
                 # The stuff required for a popover
                 popover_data = \
                     'class="anno_popover" data-content="{0}" '\
-                    .format(annotation['content'])
+                    .format(annotation['content'].translate(self.escape_html))
 
                 # Options handling, if they exist
                 try:
