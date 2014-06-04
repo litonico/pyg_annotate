@@ -36,7 +36,7 @@ annotated it to explain some of the Python notation, like `__init__`.
     @1{"range": "full_line",
     "content": "This method doesn't really exist; it's just an example",
     "options": {data-container="body" data-trigger="hover" 
-    data-placement="right}}
+    data-placement="right"}}
 
 + Annotations are placed in inline comments, using the @ symbol and a unique
 ID. They're cross-referenced with a block of annotations at the bottom of the
@@ -45,7 +45,7 @@ source.
 + Comments that are **just** annotations are deleted, but otherwise, they're
 preserved.
 
-+ `range` can be either a tuple of character ranges or 'full_line'. The 
++ `range` can be either a tuple of character ranges or `'full_line'`. The 
 character ranges are rounded to the nearest token for simplicity.
 
 + A JSON object called `options` can be included: it will be the Popover's 

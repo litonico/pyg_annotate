@@ -29,10 +29,6 @@ class AnnotationHtmlFormatter(HtmlFormatter):
         line = ''
 
         for ttype, value in tokensource:
-            if value == "\n":  # DEBUG
-                print("NL")
-            else:
-                print(value)
 
             if ttype is Token.Annotation:
                 cspan = ''

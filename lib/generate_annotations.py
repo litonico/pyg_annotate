@@ -46,8 +46,8 @@ def annotate(source, lexer_name):
         try:
             comment_start = line.find(comment_chars[lexer_name])
         except LookupError:
-            print("Lexer's comment character not found– please modify \
-                   language_data.py")
+            print("Lexer's comment character not found– please modify "
+                  "language_data.py")
             raise
 
         if comment_start > -1:  # Line has a comment
@@ -109,6 +109,13 @@ def annotate(source, lexer_name):
         else:  # if the loop ends without breaking
             if curlybrace_count > 0:
                 raise SyntaxError("Unbalaced curly braces in annotation")
+
+        try:
+            block_end
+        except NameError:
+            print("Annotation isn't formatted correctly! Make sure there's "
+                  "a newline before your annotaton block.")
+            raise
 
         try:  # to add the current block to the dict of annotations
             annotations[block_id].update(

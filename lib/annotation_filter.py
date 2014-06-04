@@ -22,11 +22,8 @@ class AnnotationFilter(Filter):
         self.annotations.sort(
             key=lambda anno: (anno["line"], anno["range"][0])
             )
-        print(self.annotations)
 
     def filter(self, lexer, stream):
-        # anno_open = "OP<>EN!"  # for testing
-        # anno_close = "CL<>OSE!"
 
         chars_on_line = 0
         lineno = 1  # lines, as we talk about them, are 1-indexed
@@ -42,7 +39,7 @@ class AnnotationFilter(Filter):
 
                 # The stuff required for a popover
                 popover_data = \
-                    'data-toggle="popover" data-content="{0}" '\
+                    'class="anno_popover" data-content="{0}" '\
                     .format(annotation['content'])
 
                 # Options handling, if they exist
@@ -61,7 +58,7 @@ class AnnotationFilter(Filter):
 
                 # TODO: unsure of the cause of this, but the span before
                 # The end of an annotation is supressed in the formatter.
-                anno_close = "</span></span ANNO_CLOSE>"
+                anno_close = "</span></span>"
 
                 anno_line = annotation["line"]
 
